@@ -117,6 +117,9 @@ func (d *dexterOIDC) createOauth2Config() error {
 	case "google":
 		d.Oauth2Config.Endpoint = google.Endpoint
 		d.Oauth2Config.Scopes = []string{oidc.ScopeOpenID, "profile", "email"}
+	case "adfs":
+		d.Oauth2Config.Endpoint = utils.ADFSEndpoint("https://adfs.home.balou.in/adfs")
+		d.Oauth2Config.Scopes = []string{oidc.ScopeOpenID, "profile", "email"}
 	default:
 		return errors.New(fmt.Sprintf("unsupported endpoint: %s", oidcData.endpoint))
 	}
@@ -174,7 +177,6 @@ func (d *dexterOIDC) autoConfigureOauth2Config() error {
 
 						} else if strings.Contains(idp, "microsoft") {
 							oidcData.endpoint = "azure"
-
 
 							re, err := regexp.Compile(`[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}`) //find uuid, this is tenant
 
@@ -396,7 +398,7 @@ var (
 		Use:   "auth",
 		Short: "Authenticate with OIDC provider",
 		Long: `Use your Google login to get a JWT (JSON Web Token) and update your
-local k8s config accordingly. A refresh token is added and automatically refreshed 
+local k8s config accordingly. A refresh token is added and automatically refreshed
 by kubectl. Existing token configurations are overwritten.
 For details go to: https://blog.gini.net/
 
